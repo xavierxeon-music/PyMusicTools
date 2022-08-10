@@ -6,15 +6,20 @@ then
    rm -rf build
 fi
 
+touch CMakeLists.txt
 rm CMakeLists.txt
 
 /usr/bin/env python3 <<END_PF_PY
-from lib import createCmakeFile
+from lib import createCmakeFile, autoGenerateBindings
+autoGenerateBindings()
 createCmakeFile()
 END_PF_PY
 
-mkdir build
-cd build
+if [ ! -d build ] 
+then
+   mkdir build
+fi
 
+cd build
 cmake ..
 make

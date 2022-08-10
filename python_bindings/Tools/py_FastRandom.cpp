@@ -4,9 +4,14 @@
 
 void init_FastRandom(pybind11::module_& module)
 {
-   pybind11::class_<FastRandom> fastRandom(module, "FastRandom");
-   fastRandom.def(pybind11::init<const uint64_t&>());
-   fastRandom.def("reset", &FastRandom::reset);
-   fastRandom.def("skip", &FastRandom::skip);
-   fastRandom.def("value", &FastRandom::value);
+   pybind11::class_<FastRandom> fastrandom(module, "FastRandom");
+   fastrandom.def(pybind11::init<>());
+   
+
+   // autogen start
+   fastrandom.def("reset", &FastRandom::reset);
+   fastrandom.def("skip", &FastRandom::skip);
+   fastrandom.def("value", &FastRandom::value);
+   // autogen end
 }
+

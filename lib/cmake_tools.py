@@ -10,22 +10,22 @@ basePath = os.path.abspath(_scriptPath + '/../')
 musicToolsDir = basePath + '/MusicTools'
 
 
-def compileCppSources():
+def _compileCppSourceList():
 
     sources = ['AbstractEffect.cpp', 'AbstractOscilator.cpp', 'AbstractSoundSource.cpp', 'Maths.cpp', 'Note.cpp', 'Spectrum.cpp']
     sources = [musicToolsDir + '/' + entry for entry in sources]
 
-    def addCppFilesToList(path):
+    def addSourceFiles(path):
         for entry in os.scandir(path):
             if entry.is_dir():
-                addCppFilesToList(entry.path)
+                addSourceFiles(entry.path)
                 continue
             if entry.is_file() and not entry.name.endswith('.cpp'):
                 continue
             path = entry.path
             sources.append(path)
 
-    addCppFilesToList(basePath + '/python_bindings')
+    addSourceFiles(basePath + '/python_bindings')
 
     return sources
 
@@ -48,7 +48,7 @@ def createCmakeFile():
         cmakefile.write('\n')
 
         cmakefile.write('pybind11_add_module(musictools \n')
-        for source in compileCppSources():
+        for source in _compileCppSourceList():
             cmakefile.write('   ' + source + '\n')
         cmakefile.write(')\n')
         cmakefile.write('\n')

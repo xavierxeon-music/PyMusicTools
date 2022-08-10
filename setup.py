@@ -4,9 +4,9 @@ import sys
 
 from setuptools import setup
 
-from lib import createCmakeFile, CMakeExtension, CMakeBuild
+from lib import createCmakeFile, autoGenerateBindings, CMakeExtension, CMakeBuild
 
-
+autoGenerateBindings()
 createCmakeFile()
 
 setup(
