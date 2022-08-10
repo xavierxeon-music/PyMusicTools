@@ -1,7 +1,6 @@
 extern void init_AbstractEffect(pybind11::module_& module);
 extern void init_AbstractOscilator(pybind11::module_& module);
 extern void init_AbstractSoundSource(pybind11::module_& module);
-extern void init_Compressor(pybind11::module_& module);
 extern void init_Counter(pybind11::module_& module);
 extern void init_FastRandom(pybind11::module_& module);
 extern void init_MidiCommon(pybind11::module_& module);
@@ -15,7 +14,6 @@ extern void init_SampleOscilator(pybind11::module_& module);
 extern void init_Sequencer(pybind11::module_& module);
 extern void init_SevenBit(pybind11::module_& module);
 extern void init_Spectrum(pybind11::module_& module);
-extern void init_StateVariableFilter(pybind11::module_& module);
 extern void init_Tempo(pybind11::module_& module);
 extern void init_TimeCode(pybind11::module_& module);
 extern void init_Trapezoid(pybind11::module_& module);

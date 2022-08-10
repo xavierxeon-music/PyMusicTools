@@ -7,48 +7,6 @@ void init_MidiCommon(pybind11::module_& module)
    pybind11::module_& midicommon = module;
 
    // autogen start
-   pybind11::enum_<Midi::Event> event(midicommon, "MidiEvent");
-   event.value("Unknown", Midi::Event::Unknown);
-   event.value("NoteOn", Midi::Event::NoteOn);
-   event.value("PolyKeyPressure", Midi::Event::PolyKeyPressure);
-   event.value("ControlChange", Midi::Event::ControlChange);
-   event.value("ProgrammChange", Midi::Event::ProgrammChange);
-   event.value("ChannelPressure", Midi::Event::ChannelPressure);
-   event.value("PitchBend", Midi::Event::PitchBend);
-   event.value("TimeCode", Midi::Event::TimeCode);
-   event.value("SongPositionPointer", Midi::Event::SongPositionPointer);
-   event.value("SongSelect", Midi::Event::SongSelect);
-   event.value("TuneRequest", Midi::Event::TuneRequest);
-   event.value("SysExEnd", Midi::Event::SysExEnd);
-   event.value("UndefinedA", Midi::Event::UndefinedA);
-   event.value("Start", Midi::Event::Start);
-   event.value("Continue", Midi::Event::Continue);
-   event.value("Stop", Midi::Event::Stop);
-   event.value("UndefinedB", Midi::Event::UndefinedB);
-   event.value("ActiveSensinig", Midi::Event::ActiveSensinig);
-   event.value("Reset", Midi::Event::Reset);
-   event.value("Meta", Midi::Event::Meta);
-   event.export_values();
-   
-   pybind11::enum_<Midi::MetaEvent> metaevent(midicommon, "MidiMetaEvent");
-   metaevent.value("MetaUnkown", Midi::MetaEvent::MetaUnkown);
-   metaevent.value("Text", Midi::MetaEvent::Text);
-   metaevent.value("Copyright", Midi::MetaEvent::Copyright);
-   metaevent.value("TrackName", Midi::MetaEvent::TrackName);
-   metaevent.value("InstrumentName", Midi::MetaEvent::InstrumentName);
-   metaevent.value("Lyric", Midi::MetaEvent::Lyric);
-   metaevent.value("Marker", Midi::MetaEvent::Marker);
-   metaevent.value("CuePoint", Midi::MetaEvent::CuePoint);
-   metaevent.value("ChannelPrefix", Midi::MetaEvent::ChannelPrefix);
-   metaevent.value("MidiPort", Midi::MetaEvent::MidiPort);
-   metaevent.value("EndOfTrack", Midi::MetaEvent::EndOfTrack);
-   metaevent.value("LiveTag", Midi::MetaEvent::LiveTag);
-   metaevent.value("Tempo", Midi::MetaEvent::Tempo);
-   metaevent.value("SMPTEOffset", Midi::MetaEvent::SMPTEOffset);
-   metaevent.value("TimeSignature", Midi::MetaEvent::TimeSignature);
-   metaevent.value("KeySignature", Midi::MetaEvent::KeySignature);
-   metaevent.export_values();
-   
    pybind11::enum_<Midi::ControllerMessage> controllermessage(midicommon, "MidiControllerMessage");
    controllermessage.value("BankSelect", Midi::ControllerMessage::BankSelect);
    controllermessage.value("ModWheel", Midi::ControllerMessage::ModWheel);
@@ -96,12 +54,6 @@ void init_MidiCommon(pybind11::module_& module)
    controllermessage.value("ResetAllControlers", Midi::ControllerMessage::ResetAllControlers);
    controllermessage.value("AllNotesOff", Midi::ControllerMessage::AllNotesOff);
    controllermessage.export_values();
-   
-   pybind11::enum_<Midi::Playback> playback(midicommon, "MidiPlayback");
-   playback.value("Start", Midi::Playback::Start);
-   playback.value("Continue", Midi::Playback::Continue);
-   playback.value("Stop", Midi::Playback::Stop);
-   playback.export_values();
    
    // autogen end
 }
