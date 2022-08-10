@@ -1,0 +1,3 @@
+[submodule "MusicTools"]
+	path = MusicTools
+	url = https://github.com/xavierxeon-music/MusicTools.git
