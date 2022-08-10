@@ -1,0 +1,7 @@
+**/data
+**/.vscode
+**/__pycache__
+**/CMakeLists.txt
+**/build
+**/musictools.egg-info
+
