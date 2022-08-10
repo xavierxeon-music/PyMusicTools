@@ -104,8 +104,39 @@ def _createSkeleton(bindingFileName, name, path, content):
         outfile.write('}\n')
         outfile.write('\n')
 
+def _updateModelHeader():
+
+    sources = list()
+    sourcePath = basePath + '/python_bindings'
+
+    def addSourceFiles(path):
+        for entry in os.scandir(path):
+            if entry.is_dir():
+                addSourceFiles(entry.path)
+                continue
+            if entry.is_file() and not entry.name.endswith('.cpp'):
+                continue
+
+            name = entry.name
+            if not name.startswith('py_'):
+                continue
+
+            name = name.replace('py_', '')
+            name = name.replace('.cpp', '')
+            if 'MusicTools' == name:
+                continue
+
+            sources.append(name)
+
+    addSourceFiles(sourcePath)
+    sources.sort()
+    
+    with open(sourcePath + '/py_MusicTools.h', 'w') as outfile:
+        for name in sources:
+            outfile.write(f'extern void init_{name}(pybind11::module_& module);\n')
 
 def autoGenerateBindings():
     headers = _compileCppHeaderDict()
     for name, path in headers.items():
         _update(name, path)
+    _updateModelHeader()
