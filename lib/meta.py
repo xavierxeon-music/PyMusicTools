@@ -4,7 +4,12 @@ class Meta:
 
     def __init__(self, content, name, parent):
 
-        self._name = name.replace('::', '')
+        colonIndex = name.rfind('::')
+        if 0 <= colonIndex:
+            self._name = name[colonIndex+2:]
+        else:
+            self._name = name
+
         self._className = name
         self._varName = name.lower().replace("::", "_")
         self._parent = parent
@@ -12,12 +17,10 @@ class Meta:
 
         self._enums = list()
         self._functions = list()
+        self._properties = list()
         self._subMeta = list()
 
         self._parse(content)
-
-        self._enums = [self._cleanEnum(line) for line in self._enums]
-        self._functions = [self._cleanFunction(line) for line in self._functions]
 
     def _parse(self, content):
 
@@ -56,8 +59,11 @@ class Meta:
 
                 openIndex = line.find('{')
                 closeIndex = line.rfind('}')
-                line = line[openIndex + 1: closeIndex]
-                subMeta = Meta(line.split("\n"), f'{self._className}::{name}', self._varName)
+                subContent = line[openIndex + 1: closeIndex]
+                subContent = subContent.split('\n')
+                subContent = [line + '\n' for line in subContent]
+
+                subMeta = Meta(subContent, f'{self._className}::{name}', self._varName)
                 self._subMeta.append(subMeta)
             elif 'pyexport enum' in line:
                 line = line.strip()
@@ -67,12 +73,19 @@ class Meta:
                     line += subContent
                     if ';' in subContent:
                         break
-                self._enums.append(line)
+                lineDict = self._complileEnumDict(line)
+                self._enums.append(lineDict)
             elif 'pyexport' in line:
                 line = line.strip()
-                self._functions.append(line)
+                openIndex = line.find('(')
+                if 0 >= openIndex:
+                    lineDict = self._compilePropertyDict(line)
+                    self._properties.append(lineDict)
+                else:
+                    lineDict = self._complileFunctionDict(line)
+                    self._functions.append(lineDict)
 
-    def _cleanEnum(self, line):
+    def _complileEnumDict(self, line):
 
         openIndex = line.find('{')
         closeIndex = line.find('}')
@@ -98,7 +111,7 @@ class Meta:
 
         return {'name': name, 'values': content}
 
-    def _cleanFunction(self, line):
+    def _complileFunctionDict(self, line):
 
         openIndex = line.find('(')
         name = line[:openIndex]
@@ -116,6 +129,23 @@ class Meta:
         isConstructor = (name == constructorName)
 
         return {'name': name, 'static': isStatic, 'constructor': isConstructor}
+
+    def _compilePropertyDict(self, line):
+
+        openIndex = line.find(';')
+        name = line[:openIndex]
+
+        equalIndex = line.rfind('=')
+        if 0 <= equalIndex:
+            name = name[:equalIndex]
+
+        name = name.strip()
+
+        spaceIndex = name.rfind(' ')
+        name = name[spaceIndex:]
+        name = name.strip()
+
+        return {'name': name}
 
     def compileConstructor(self):
 
@@ -154,6 +184,13 @@ class Meta:
         for entry in self._subMeta:
             for subContent in entry.compileOther():
                 content.append(subContent)
+
+        for entry in self._properties:
+            propertyName = entry['name']
+            content.append(f'{self._varName}.def_readwrite("{propertyName}", &{self._className}::{propertyName});')
+
+        if self._properties:
+            content.append('')
 
         for entry in self._functions:
             funcName = entry['name']

@@ -88,6 +88,7 @@ def _createSkeleton(bindingFileName, name, path, content):
     with open(bindingFileName, 'w') as outfile:
 
         outfile.write('#include <pybind11/pybind11.h>\n')
+        outfile.write('#include <pybind11/stl.h>\n')
         outfile.write('\n')
         outfile.write(f'#include <{path}/{name}.h>\n')
         outfile.write('\n')
@@ -103,6 +104,7 @@ def _createSkeleton(bindingFileName, name, path, content):
         outfile.write('   // autogen end\n')
         outfile.write('}\n')
         outfile.write('\n')
+
 
 def _updateModelHeader():
 
@@ -130,10 +132,11 @@ def _updateModelHeader():
 
     addSourceFiles(sourcePath)
     sources.sort()
-    
+
     with open(sourcePath + '/py_MusicTools.h', 'w') as outfile:
         for name in sources:
             outfile.write(f'extern void init_{name}(pybind11::module_& module);\n')
+
 
 def autoGenerateBindings():
     headers = _compileCppHeaderDict()
