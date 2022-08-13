@@ -9,9 +9,6 @@ void init_FastRandom(pybind11::module_& module)
    
 
    // autogen start
-   fastrandom.def("reset", &FastRandom::reset);
-   fastrandom.def("skip", &FastRandom::skip);
-   fastrandom.def("value", &FastRandom::value);
    // autogen end
 }
 

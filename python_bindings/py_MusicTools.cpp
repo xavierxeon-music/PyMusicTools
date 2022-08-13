@@ -22,9 +22,11 @@ PYBIND11_MODULE(musictools, module)
    init_SampleOscilator(module);
    init_Sequencer(module);
    init_SevenBit(module);
+   init_SoundMesh(module);
    init_Spectrum(module);
    init_Tempo(module);
    init_TimeCode(module);
    init_Trapezoid(module);
    init_WaveTable(module);
 }
+

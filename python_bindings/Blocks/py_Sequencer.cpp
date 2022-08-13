@@ -22,31 +22,6 @@ void init_Sequencer(pybind11::module_& module)
    
 
    // autogen start
-   sequencer_info.def_readwrite("maxTick", &Sequencer::Info::maxTick);
-   sequencer_info.def_readwrite("barCounter", &Sequencer::Info::barCounter);
-   sequencer_info.def_readwrite("bpm", &Sequencer::Info::bpm);
-   sequencer_info.def_readwrite("minutes", &Sequencer::Info::minutes);
-   sequencer_info.def_readwrite("seconds", &Sequencer::Info::seconds);
-   sequencer_info.def_readwrite("polyphonicTrackIndexList", &Sequencer::Info::polyphonicTrackIndexList);
-   sequencer_info.def_readwrite("monophonicTrackIndexList", &Sequencer::Info::monophonicTrackIndexList);
-   
-   sequencer_track_header.def_readwrite("maxTick", &Sequencer::Track::Header::maxTick);
-   sequencer_track_header.def_readwrite("name", &Sequencer::Track::Header::name);
-   
-   sequencer_track_noteevent.def_readwrite("channel", &Sequencer::Track::NoteEvent::channel);
-   sequencer_track_noteevent.def_readwrite("key", &Sequencer::Track::NoteEvent::key);
-   sequencer_track_noteevent.def_readwrite("velocity", &Sequencer::Track::NoteEvent::velocity);
-   sequencer_track_noteevent.def_readwrite("on", &Sequencer::Track::NoteEvent::on);
-   
-   sequencer_track.def_readwrite("header", &Sequencer::Track::header);
-   sequencer_track.def_readwrite("noteOnEventMap", &Sequencer::Track::noteOnEventMap);
-   sequencer_track.def_readwrite("noteOffEventMap", &Sequencer::Track::noteOffEventMap);
-   
-   sequencer.def("compileInfo", &Sequencer::compileInfo);
-   sequencer.def("getTrackList", &Sequencer::getTrackList);
-   sequencer.def("compileBarCounter", &Sequencer::compileBarCounter);
-   sequencer.def("fromTick", &Sequencer::fromTick);
-   sequencer.def("toTick", &Sequencer::toTick);
    // autogen end
 }
 

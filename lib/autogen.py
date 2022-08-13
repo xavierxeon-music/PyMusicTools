@@ -50,9 +50,19 @@ def _compileCppHeaderDict():
 def _update(name, path):
 
     headerFileName = basePath + '/MusicTools/Include/' + path + '/' + name + '.h'
+    # print(headerFileName)
+
+    content = list()
     with open(headerFileName, 'r') as infile:
-        content = infile.readlines()
-    meta = Meta(content, name, 'module')
+        for line in infile.readlines():
+            commentIndex = line.find('//')
+            if 0 <= commentIndex:
+                line = line[:commentIndex]
+            line = line.strip()
+            if line:
+                content.append(line)
+
+    meta = Meta(content, None, None, 'module')
 
     bindingFileName = basePath + '/python_bindings/' + path + '/py_' + name + '.cpp'
     if not os.path.exists(bindingFileName):
@@ -106,7 +116,7 @@ def _createSkeleton(bindingFileName, name, path, content):
         outfile.write('\n')
 
 
-def _updateModelHeader():
+def _updateModelHeaderAndSource():
 
     sources = list()
     sourcePath = basePath + '/python_bindings'
@@ -137,9 +147,26 @@ def _updateModelHeader():
         for name in sources:
             outfile.write(f'extern void init_{name}(pybind11::module_& module);\n')
 
+    with open(sourcePath + '/py_MusicTools.cpp', 'w') as outfile:
+        outfile.write('#include <pybind11/pybind11.h>\n')
+        outfile.write('\n')
+        outfile.write('#ifndef MusicToolsH\n')
+        outfile.write('#define MusicToolsH\n')
+        outfile.write('#include "py_MusicTools.h"\n')
+        outfile.write('#endif // NOT MusicToolsH\n')
+        outfile.write('\n')
+        outfile.write('PYBIND11_MODULE(musictools, module)\n')
+        outfile.write('{\n')
+        for name in sources:
+            outfile.write(f'   init_{name}(module);\n')
+        outfile.write('}\n')
+        outfile.write('\n')
+
 
 def autoGenerateBindings():
+
     headers = _compileCppHeaderDict()
     for name, path in headers.items():
         _update(name, path)
-    _updateModelHeader()
+
+    _updateModelHeaderAndSource()

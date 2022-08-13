@@ -13,6 +13,7 @@ extern void init_Sample(pybind11::module_& module);
 extern void init_SampleOscilator(pybind11::module_& module);
 extern void init_Sequencer(pybind11::module_& module);
 extern void init_SevenBit(pybind11::module_& module);
+extern void init_SoundMesh(pybind11::module_& module);
 extern void init_Spectrum(pybind11::module_& module);
 extern void init_Tempo(pybind11::module_& module);
 extern void init_TimeCode(pybind11::module_& module);

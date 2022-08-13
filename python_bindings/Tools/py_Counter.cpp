@@ -8,11 +8,5 @@ void init_Counter(pybind11::module_& module)
    counter.def(pybind11::init<const uint64_t&>());
 
    // autogen start
-   counter.def("reset", &Counter::reset);
-   counter.def("setMaxValue", &Counter::setMaxValue);
-   counter.def("valueAndNext", &Counter::valueAndNext);
-   counter.def("getCurrentValue", &Counter::getCurrentValue);
-   counter.def("nextAndIsMaxValue", &Counter::nextAndIsMaxValue);
-   counter.def("getMaxValue", &Counter::getMaxValue);
    // autogen end
 }

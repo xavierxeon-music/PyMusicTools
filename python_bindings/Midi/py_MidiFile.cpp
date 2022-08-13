@@ -9,8 +9,6 @@ void init_MidiFile(pybind11::module_& module)
    
 
    // autogen start
-   midifile.def_static("load", &Midi::File::load);
-   midifile.def_static("save", &Midi::File::save);
    // autogen end
 }
 

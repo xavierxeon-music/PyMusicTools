@@ -1,19 +1,42 @@
 #!/usr/bin/env python3
 
+def cleanBack(data, delimeter):
+    index = data.find(delimeter)
+    if index >= 0:
+        data = data[:index]
+    data = data.strip()
+    return data
+
+
+def parseSubContent(iterator):
+
+    subContent = list()
+    bracketCounter = 0
+    while True:
+        line = next(iterator)
+        subContent.append(line)
+        if '{' in line:
+            bracketCounter += 1
+        if '}' in line:
+            bracketCounter -= 1
+        if 0 == bracketCounter:
+            break
+
+    if subContent[0].startswith('{'):
+        subContent = subContent[1:]
+    if subContent[-1].startswith('}'):
+        subContent = subContent[:-1]
+
+    return subContent
+
+
 class Meta:
 
-    def __init__(self, content, name, parent):
+    def __init__(self, content,  name, cppParent, pyParent):
 
-        colonIndex = name.rfind('::')
-        if 0 <= colonIndex:
-            self._name = name[colonIndex+2:]
-        else:
-            self._name = name
-
-        self._className = name
-        self._varName = name.lower().replace("::", "_")
-        self._parent = parent
-        self._namespace = str()
+        self._name = name if name else str()
+        self._cppParent = cppParent
+        self._pyParent = pyParent
 
         self._enums = list()
         self._functions = list()
@@ -26,54 +49,36 @@ class Meta:
 
         iterator = iter(content)
         for line in iterator:
-            if 'PYCLASS' in line:
-                line = line.strip()
-                line = line.replace('PYCLASS', '')
-                line = line.replace('(', '')
-                line = line.replace(')', '')
-                line = line.strip()
-                self._className = line
-            elif 'PYNAMESPCE' in line:
-                line = line.strip()
-                line = line.replace('PYNAMESPCE', '')
-                line = line.replace('(', '')
-                line = line.replace(')', '')
-                line = line.strip()
-                self._namespace = line
-            elif 'pyexport struct' in line:
+
+            def createSubMeta(marker):
                 name = line
                 name = name.replace('pyexport', '')
-                name = name.replace('struct', '')
-                name = name.strip()
+                name = name.replace(marker, '')
+                name = cleanBack(name, ':')
 
-                bracketCounter = 0
-                while True:
-                    subContent = next(iterator)
-                    line += subContent
-                    if '{' in subContent:
-                        bracketCounter += 1
-                    if '}' in subContent:
-                        bracketCounter -= 1
-                    if 0 == bracketCounter:
-                        break
+                subContent = parseSubContent(iterator)
 
-                openIndex = line.find('{')
-                closeIndex = line.rfind('}')
-                subContent = line[openIndex + 1: closeIndex]
-                subContent = subContent.split('\n')
-                subContent = [line + '\n' for line in subContent]
-
-                subMeta = Meta(subContent, f'{self._className}::{name}', self._varName)
+                subCppParent = f'{self._cppParent}::{name}' if self._cppParent else name
+                subMeta = Meta(subContent, name, subCppParent, self._pyParent + '_' + name.lower())
                 self._subMeta.append(subMeta)
+
+            if 'pyexport namespace' in line:
+                createSubMeta('namespace')
+            elif 'pyexport class' in line:
+                createSubMeta('class')
+            elif 'pyexport struct' in line:
+                createSubMeta('struct')
+            """
             elif 'pyexport enum' in line:
-                line = line.strip()
-                while True:
-                    subContent = next(iterator)
-                    subContent = subContent.strip()
-                    line += subContent
-                    if ';' in subContent:
-                        break
-                lineDict = self._complileEnumDict(line)
+                name = line
+                name = name.replace('pyexport', '')
+                name = name.replace('enum', '')
+                name = name.replace('class', '')
+                name = cleanBack(name, ':')
+
+                subContent = parseSubContent(iterator)
+
+                lineDict = self._complileEnumDict(name, subContent)
                 self._enums.append(lineDict)
             elif 'pyexport' in line:
                 line = line.strip()
@@ -84,32 +89,15 @@ class Meta:
                 else:
                     lineDict = self._complileFunctionDict(line)
                     self._functions.append(lineDict)
+            """
 
-    def _complileEnumDict(self, line):
+    def _complileEnumDict(self, name, subContent):
 
-        openIndex = line.find('{')
-        closeIndex = line.find('}')
+        subContent = [cleanBack(data, '=') for data in subContent]
+        subContent = [cleanBack(data, ',') for data in subContent]
+        subContent = [data for data in subContent if data]
 
-        def clean(data, delimeter):
-            index = data.find(delimeter)
-            if index >= 0:
-                data = data[:index]
-            data = data.strip()
-            return data
-
-        content = line[openIndex + 1: closeIndex]
-        content = content.split(',')
-        content = [clean(data, '=') for data in content]
-        content = [clean(data, '//') for data in content]
-        content = [data for data in content if data]
-
-        name = line[:openIndex]
-        name = name.replace('pyexport', '')
-        name = name.replace('enum', '')
-        name = name.replace('class', '')
-        name = clean(name, ':')
-
-        return {'name': name, 'values': content}
+        return {'name': name, 'values': subContent}
 
     def _complileFunctionDict(self, line):
 
@@ -150,17 +138,21 @@ class Meta:
     def compileConstructor(self):
 
         content = list()
-        content.append(f'pybind11::class_<{self._className}> {self._varName}({self._parent}, "{self._name}");')
+        print(self._name, self._cppParent, self._pyParent)
+        if self._name != '':
+            pyName = self._pyParent + '_' + self._name
+            fullCppName = f'{self._cppParent}::{self._name}' if self._cppParent else self._name
+            content.append(f'pybind11::class_<{fullCppName}> {pyName}({self._pyParent}, "{self._name}");')
 
-        args = str()
-        for entry in self._functions:
-            funcName = entry['name']
-            if not entry['constructor']:
-                continue
-            break
+            args = str()
+            for entry in self._functions:
+                funcName = entry['name']
+                if not entry['constructor']:
+                    continue
+                break
 
-        content.append(f'{self._varName}.def(pybind11::init<{args}>());')
-        content.append('')
+            content.append(f'{pyName}.def(pybind11::init<{args}>());')
+            content.append('')
 
         for entry in self._subMeta:
             for subContent in entry.compileConstructor():
@@ -171,7 +163,7 @@ class Meta:
     def compileOther(self):
 
         content = list()
-
+        """
         for entry in self._enums:
             eName = entry['name']
             eVarName = eName.lower().replace("::", "_")
@@ -183,7 +175,10 @@ class Meta:
 
         for entry in self._subMeta:
             for subContent in entry.compileOther():
+                if content[-1:] != '' and subContent == '':
+                    continue
                 content.append(subContent)
+            content.append('')
 
         for entry in self._properties:
             propertyName = entry['name']
@@ -200,5 +195,5 @@ class Meta:
                 content.append(f'{self._varName}.def_static("{funcName}", &{self._className}::{funcName});')
             else:
                 content.append(f'{self._varName}.def("{funcName}", &{self._className}::{funcName});')
-
+        """
         return content
