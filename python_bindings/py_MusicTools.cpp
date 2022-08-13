@@ -14,7 +14,6 @@ PYBIND11_MODULE(musictools, module)
    init_FastRandom(module);
    init_MidiCommon(module);
    init_MidiFile(module);
-   init_Morpher(module);
    init_Note(module);
    init_PolyRamp(module);
    init_Revoice(module);

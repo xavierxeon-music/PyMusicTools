@@ -5,7 +5,6 @@ extern void init_Counter(pybind11::module_& module);
 extern void init_FastRandom(pybind11::module_& module);
 extern void init_MidiCommon(pybind11::module_& module);
 extern void init_MidiFile(pybind11::module_& module);
-extern void init_Morpher(pybind11::module_& module);
 extern void init_Note(pybind11::module_& module);
 extern void init_PolyRamp(pybind11::module_& module);
 extern void init_Revoice(pybind11::module_& module);

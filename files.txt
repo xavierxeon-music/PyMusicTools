@@ -1,0 +1,16 @@
+python_bindings/Blocks/py_Trapezoid.cpp
+python_bindings/Blocks/py_PolyRamp.cpp
+python_bindings/Blocks/py_Sequencer.cpp
+python_bindings/Music/py_Note.cpp
+python_bindings/Music/py_TimeCode.cpp
+python_bindings/Music/py_Tempo.cpp
+python_bindings/Tools/py_Counter.cpp
+python_bindings/Tools/py_SevenBit.cpp
+python_bindings/Tools/py_FastRandom.cpp
+python_bindings/Midi/py_MidiFile.cpp
+python_bindings/Midi/py_MidiCommon.cpp
+python_bindings/Effect/py_Revoice.cpp
+python_bindings/Sound/py_SoundMesh.cpp
+python_bindings/Sound/py_Sample.cpp
+python_bindings/Sound/py_Spectrum.cpp
+python_bindings/Sound/py_SampleOscilator.cpp

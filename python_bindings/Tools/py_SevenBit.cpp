@@ -7,7 +7,11 @@ void init_SevenBit(pybind11::module_& module)
 {
    pybind11::class_<SevenBit> sevenbit(module, "SevenBit");
    sevenbit.def(pybind11::init<>());
+   
 
    // autogen start
+   sevenbit.def_static("encode", &SevenBit::encode);
+   sevenbit.def_static("decode", &SevenBit::decode);
    // autogen end
 }
+

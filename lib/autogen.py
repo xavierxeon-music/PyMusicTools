@@ -62,7 +62,7 @@ def _update(name, path):
             if line:
                 content.append(line)
 
-    meta = Meta(content, None, None, 'module')
+    meta = Meta(content, None, None)
 
     bindingFileName = basePath + '/python_bindings/' + path + '/py_' + name + '.cpp'
     if not os.path.exists(bindingFileName):

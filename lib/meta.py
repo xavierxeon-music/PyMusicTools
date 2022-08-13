@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
-def cleanBack(data, delimeter):
-    index = data.find(delimeter)
+def clean(data, frontRemoval, endDelimeter):
+    for remove in frontRemoval:
+        data = data.replace(remove, '')
+    index = data.find(endDelimeter)
     if index >= 0:
         data = data[:index]
     data = data.strip()
@@ -32,16 +34,29 @@ def parseSubContent(iterator):
 
 class Meta:
 
-    def __init__(self, content,  name, cppParent, pyParent):
+    def __init__(self, content, name, parent):
 
-        self._name = name if name else str()
-        self._cppParent = cppParent
-        self._pyParent = pyParent
+        self.name = name
+        self.parent = parent
+
+        self.pyName = name.lower() if name else None
+        self.cppName = name
+
+        self.isNamespace = False
+
+        if parent:
+            if parent.pyName:
+                self.pyName = parent.pyName + '_' + self.pyName
+            if parent.cppName:
+                self.cppName = parent.cppName + '::' + self.cppName
+            if parent.isNamespace:
+                self.name = parent.name + self.name
+
+        self._subMeta = list()
 
         self._enums = list()
         self._functions = list()
         self._properties = list()
-        self._subMeta = list()
 
         self._parse(content)
 
@@ -50,34 +65,25 @@ class Meta:
         iterator = iter(content)
         for line in iterator:
 
-            def createSubMeta(marker):
-                name = line
-                name = name.replace('pyexport', '')
-                name = name.replace(marker, '')
-                name = cleanBack(name, ':')
-
-                subContent = parseSubContent(iterator)
-
-                subCppParent = f'{self._cppParent}::{name}' if self._cppParent else name
-                subMeta = Meta(subContent, name, subCppParent, self._pyParent + '_' + name.lower())
-                self._subMeta.append(subMeta)
-
             if 'pyexport namespace' in line:
-                createSubMeta('namespace')
-            elif 'pyexport class' in line:
-                createSubMeta('class')
-            elif 'pyexport struct' in line:
-                createSubMeta('struct')
-            """
-            elif 'pyexport enum' in line:
-                name = line
-                name = name.replace('pyexport', '')
-                name = name.replace('enum', '')
-                name = name.replace('class', '')
-                name = cleanBack(name, ':')
-
+                name = clean(line, ['pyexport', 'namespace'], ':')
                 subContent = parseSubContent(iterator)
-
+                subMeta = Meta(subContent, name, self)
+                subMeta.isNamespace = True
+                self._subMeta.append(subMeta)
+            elif 'pyexport class' in line:
+                name = clean(line, ['pyexport', 'class'], ':')
+                subContent = parseSubContent(iterator)
+                subMeta = Meta(subContent, name, self)
+                self._subMeta.append(subMeta)
+            elif 'pyexport struct' in line:
+                name = clean(line, ['pyexport', 'struct'], ':')
+                subContent = parseSubContent(iterator)
+                subMeta = Meta(subContent, name, self)
+                self._subMeta.append(subMeta)
+            elif 'pyexport enum' in line:
+                name = clean(line, ['pyexport', 'enum', 'class'], ':')
+                subContent = parseSubContent(iterator)
                 lineDict = self._complileEnumDict(name, subContent)
                 self._enums.append(lineDict)
             elif 'pyexport' in line:
@@ -89,12 +95,11 @@ class Meta:
                 else:
                     lineDict = self._complileFunctionDict(line)
                     self._functions.append(lineDict)
-            """
 
     def _complileEnumDict(self, name, subContent):
 
-        subContent = [cleanBack(data, '=') for data in subContent]
-        subContent = [cleanBack(data, ',') for data in subContent]
+        subContent = [clean(data, [], '=') for data in subContent]
+        subContent = [clean(data, [], ',') for data in subContent]
         subContent = [data for data in subContent if data]
 
         return {'name': name, 'values': subContent}
@@ -110,11 +115,14 @@ class Meta:
         name = name.strip()
 
         isStatic = ('static' in line)
-        constructorName = self._className
-        index = self._className.rfind('::')
-        if index >= 0:
-            constructorName = constructorName[index+2:]
-        isConstructor = (name == constructorName)
+        if self.name:
+            constructorName = self.name
+            index = constructorName.rfind('::')
+            if index >= 0:
+                constructorName = constructorName[index+2:]
+            isConstructor = (name == constructorName)
+        else:
+            isConstructor = False
 
         return {'name': name, 'static': isStatic, 'constructor': isConstructor}
 
@@ -133,16 +141,18 @@ class Meta:
         name = name[spaceIndex:]
         name = name.strip()
 
-        return {'name': name}
+        isStatic = ('static' in line)
+
+        return {'name': name, 'static': isStatic}
 
     def compileConstructor(self):
 
         content = list()
-        print(self._name, self._cppParent, self._pyParent)
-        if self._name != '':
-            pyName = self._pyParent + '_' + self._name
-            fullCppName = f'{self._cppParent}::{self._name}' if self._cppParent else self._name
-            content.append(f'pybind11::class_<{fullCppName}> {pyName}({self._pyParent}, "{self._name}");')
+        if self.name and not self.isNamespace:
+            pyParent = self.parent.pyName if self.parent and not self.parent.isNamespace else None
+            if not pyParent:
+                pyParent = 'module'
+            content.append(f'pybind11::class_<{self.cppName}> {self.pyName}({pyParent}, "{self.name}");')
 
             args = str()
             for entry in self._functions:
@@ -151,7 +161,7 @@ class Meta:
                     continue
                 break
 
-            content.append(f'{pyName}.def(pybind11::init<{args}>());')
+            content.append(f'{self.pyName}.def(pybind11::init<{args}>());')
             content.append('')
 
         for entry in self._subMeta:
@@ -163,26 +173,29 @@ class Meta:
     def compileOther(self):
 
         content = list()
-        """
+
         for entry in self._enums:
             eName = entry['name']
             eVarName = eName.lower().replace("::", "_")
-            content.append(f'pybind11::enum_<{self._className}::{eName}> {eVarName}({self._varName}, "{self._namespace + eName}");')
+            pyParent = self.parent.pyName if self.parent else None
+            if not pyParent:
+                pyParent = 'module'
+            content.append(f'pybind11::enum_<{self.cppName}::{eName}> {eVarName}({pyParent}, "{self.name + eName}");')
             for value in entry['values']:
-                content.append(f'{eVarName}.value("{value}", {self._className}::{eName}::{value});')
+                content.append(f'{eVarName}.value("{value}", {self.cppName}::{eName}::{value});')
             content.append(f'{eVarName}.export_values();')
             content.append('')
 
         for entry in self._subMeta:
             for subContent in entry.compileOther():
-                if content[-1:] != '' and subContent == '':
-                    continue
                 content.append(subContent)
-            content.append('')
 
         for entry in self._properties:
             propertyName = entry['name']
-            content.append(f'{self._varName}.def_readwrite("{propertyName}", &{self._className}::{propertyName});')
+            if entry['static']:
+                content.append(f'{self.pyName}.def_readwrite_static("{propertyName}", &{self.cppName}::{propertyName});')
+            else:
+                content.append(f'{self.pyName}.def_readwrite("{propertyName}", &{self.cppName}::{propertyName});')
 
         if self._properties:
             content.append('')
@@ -192,8 +205,8 @@ class Meta:
             if entry['constructor']:
                 continue
             if entry['static']:
-                content.append(f'{self._varName}.def_static("{funcName}", &{self._className}::{funcName});')
+                content.append(f'{self.pyName}.def_static("{funcName}", &{self.cppName}::{funcName});')
             else:
-                content.append(f'{self._varName}.def("{funcName}", &{self._className}::{funcName});')
-        """
+                content.append(f'{self.pyName}.def("{funcName}", &{self.cppName}::{funcName});')
+
         return content

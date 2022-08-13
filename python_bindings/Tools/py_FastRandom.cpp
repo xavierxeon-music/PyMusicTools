@@ -1,4 +1,5 @@
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include <Tools/FastRandom.h>
 
@@ -9,6 +10,9 @@ void init_FastRandom(pybind11::module_& module)
    
 
    // autogen start
+   fastrandom.def("reset", &FastRandom::reset);
+   fastrandom.def("skip", &FastRandom::skip);
+   fastrandom.def("value", &FastRandom::value);
    // autogen end
 }
 
