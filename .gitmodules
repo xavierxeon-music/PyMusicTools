@@ -1,9 +1,3 @@
 [submodule "MusicTools"]
 	path = MusicTools
 	url = https://github.com/xavierxeon-music/MusicTools.git
-[submodule "AudioDevice"]
-	path = AudioDevice
-	url = https://github.com/xavierxeon-music/AudioDevice.git
-[submodule "MidiDevice"]
-	path = MidiDevice
-	url = https://github.com/xavierxeon-music/MidiDevice.git
