@@ -6,7 +6,7 @@
 void init_FastRandom(pybind11::module_& module)
 {
    pybind11::class_<FastRandom> fastrandom(module, "FastRandom");
-   fastrandom.def(pybind11::init<>());
+   fastrandom.def(pybind11::init<const uint64_t&>());
    
 
    // autogen start

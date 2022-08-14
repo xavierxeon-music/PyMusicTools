@@ -6,7 +6,7 @@
 void init_Revoice(pybind11::module_& module)
 {
    pybind11::class_<Revoice> revoice(module, "Revoice");
-   revoice.def(pybind11::init<>());
+   revoice.def(pybind11::init<const uint8_t&,const Spectrum::Quality&>());
    
 
    // autogen start

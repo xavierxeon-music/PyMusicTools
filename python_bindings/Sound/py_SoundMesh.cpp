@@ -9,13 +9,13 @@ void init_SoundMesh(pybind11::module_& module)
    soundmesh_point.def(pybind11::init<>());
    
    pybind11::class_<SoundMesh::Grid> soundmesh_grid(module, "Grid");
-   soundmesh_grid.def(pybind11::init<>());
+   soundmesh_grid.def(pybind11::init<const uint16_t&>());
    
    pybind11::class_<SoundMesh::Grid::PointF> soundmesh_grid_pointf(soundmesh_grid, "PointF");
    soundmesh_grid_pointf.def(pybind11::init<>());
    
    pybind11::class_<SoundMesh::Table> soundmesh_table(module, "Table");
-   soundmesh_table.def(pybind11::init<>());
+   soundmesh_table.def(pybind11::init<const uint64_t&>());
    
 
    // autogen start

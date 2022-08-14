@@ -6,8 +6,7 @@
 void init_Spectrum(pybind11::module_& module)
 {
    pybind11::class_<Spectrum> spectrum(module, "Spectrum");
-   spectrum.def(pybind11::init<>());
-   
+   spectrum.def(pybind11::init<const Spectrum::Quality&>());
 
    // autogen start
    pybind11::enum_<Spectrum::Quality> quality(module, "SpectrumQuality");
@@ -19,4 +18,3 @@ void init_Spectrum(pybind11::module_& module)
    spectrum.def_static("compileBufferSize", &Spectrum::compileBufferSize);
    // autogen end
 }
-

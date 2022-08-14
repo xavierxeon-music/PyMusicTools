@@ -158,8 +158,9 @@ class Meta:
         name = name.strip()
 
         isStatic = ('static' in line)
+        isConst = ('const' in line)
 
-        return {'name': name, 'static': isStatic}
+        return {'name': name, 'static': isStatic, 'const': isConst}
 
     def compileConstructor(self):
 
@@ -212,9 +213,15 @@ class Meta:
         for entry in self._properties:
             propertyName = entry['name']
             if entry['static']:
-                content.append(f'{self.pyName}.def_readwrite_static("{propertyName}", &{self.cppName}::{propertyName});')
+                if entry['const']:
+                    content.append(f'{self.pyName}.def_readonly_static("{propertyName}", &{self.cppName}::{propertyName});')
+                else:
+                    content.append(f'{self.pyName}.def_readwrite_static("{propertyName}", &{self.cppName}::{propertyName});')
             else:
-                content.append(f'{self.pyName}.def_readwrite("{propertyName}", &{self.cppName}::{propertyName});')
+                if entry['const']:
+                    content.append(f'{self.pyName}.def_readonly("{propertyName}", &{self.cppName}::{propertyName});')
+                else:
+                    content.append(f'{self.pyName}.def_readwrite("{propertyName}", &{self.cppName}::{propertyName});')
 
         if self._properties:
             content.append('')

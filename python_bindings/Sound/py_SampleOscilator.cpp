@@ -6,7 +6,7 @@
 void init_SampleOscilator(pybind11::module_& module)
 {
    pybind11::class_<Sample::Oscilator> sample_oscilator(module, "SampleOscilator");
-   sample_oscilator.def(pybind11::init<>());
+   sample_oscilator.def(pybind11::init<const bool>());
    
 
    // autogen start

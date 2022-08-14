@@ -6,7 +6,7 @@
 void init_TimeCode(pybind11::module_& module)
 {
    pybind11::class_<TimeCode> timecode(module, "TimeCode");
-   timecode.def(pybind11::init<>());
+   timecode.def(pybind11::init<uint16_t,uint8_t,uint8_t>());
    
 
    // autogen start
