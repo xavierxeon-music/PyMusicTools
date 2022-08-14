@@ -9,6 +9,13 @@ _scriptPath = os.path.dirname(_scriptPath)
 basePath = os.path.abspath(_scriptPath + '/../')
 
 
+class FileSearch:
+
+    def __init__(self, includePath):
+
+        pass
+
+
 def _compileCppHeaderDict():
 
     headers = dict()
