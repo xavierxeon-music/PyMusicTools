@@ -10,11 +10,10 @@ void init_Revoice(pybind11::module_& module)
    
 
    // autogen start
-   None.def("Revoice", &None::Revoice);
-   None.def("getNumberOfVoices", &None::getNumberOfVoices);
-   None.def("setNumberOfVoices", &None::setNumberOfVoices);
-   None.def("setSampleRate", &None::setSampleRate);
-   None.def("convert", &None::convert);
+   revoice.def("getNumberOfVoices", &Revoice::getNumberOfVoices);
+   revoice.def("setNumberOfVoices", &Revoice::setNumberOfVoices);
+   revoice.def("setSampleRate", &Revoice::setSampleRate);
+   revoice.def("convert", &Revoice::convert);
    // autogen end
 }
 

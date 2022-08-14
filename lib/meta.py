@@ -39,7 +39,7 @@ class Meta:
         self.name = name
         self.parent = parent
 
-        self.pyName = name.lower() if name else None
+        self.pyName = name.lower().replace('::', '_') if name else None
         self.cppName = name
 
         self.isNamespace = False
@@ -72,7 +72,7 @@ class Meta:
                 subMeta.isNamespace = True
                 self._subMeta.append(subMeta)
             elif 'pyexport class' in line:
-                name = clean(line, ['pyexport', 'class'], ':')
+                name = clean(line, ['pyexport', 'class'], ': public')
                 subContent = parseSubContent(iterator)
                 subMeta = Meta(subContent, name, self)
                 self._subMeta.append(subMeta)
@@ -84,19 +84,19 @@ class Meta:
             elif 'pyexport enum' in line:
                 name = clean(line, ['pyexport', 'enum', 'class'], ':')
                 subContent = parseSubContent(iterator)
-                lineDict = self._complileEnumDict(name, subContent)
+                lineDict = self._createEnumDict(name, subContent)
                 self._enums.append(lineDict)
             elif 'pyexport' in line:
                 line = line.strip()
                 openIndex = line.find('(')
                 if 0 >= openIndex:
-                    lineDict = self._compilePropertyDict(line)
+                    lineDict = self._createPropertyDict(line)
                     self._properties.append(lineDict)
                 else:
-                    lineDict = self._complileFunctionDict(line)
+                    lineDict = self._createFunctionDict(line)
                     self._functions.append(lineDict)
 
-    def _complileEnumDict(self, name, subContent):
+    def _createEnumDict(self, name, subContent):
 
         subContent = [clean(data, [], '=') for data in subContent]
         subContent = [clean(data, [], ',') for data in subContent]
@@ -104,7 +104,7 @@ class Meta:
 
         return {'name': name, 'values': subContent}
 
-    def _complileFunctionDict(self, line):
+    def _createFunctionDict(self, line):
 
         openIndex = line.find('(')
         name = line[:openIndex]
@@ -124,9 +124,25 @@ class Meta:
         else:
             isConstructor = False
 
-        return {'name': name, 'static': isStatic, 'constructor': isConstructor}
+        def removeLast(data):
+            spaceIndex = data.rfind(' ')
+            if 0 <= spaceIndex:
+                data = data[:spaceIndex]
+            return data
 
-    def _compilePropertyDict(self, line):
+        arguments = str()
+        if isConstructor:
+            closeIndex = line.rfind(')')
+            argsContent = line[openIndex + 1: closeIndex].strip()
+            if argsContent:
+                argsContent = argsContent.split(',')
+                argsContent = [clean(data, [], '=') for data in argsContent]
+                argsContent = [removeLast(data) for data in argsContent]
+                arguments = ','.join(argsContent)
+
+        return {'name': name, 'static': isStatic, 'constructor': isConstructor, 'arguments': arguments}
+
+    def _createPropertyDict(self, line):
 
         openIndex = line.find(';')
         name = line[:openIndex]
@@ -148,20 +164,23 @@ class Meta:
     def compileConstructor(self):
 
         content = list()
+
         if self.name and not self.isNamespace:
             pyParent = self.parent.pyName if self.parent and not self.parent.isNamespace else None
             if not pyParent:
                 pyParent = 'module'
-            content.append(f'pybind11::class_<{self.cppName}> {self.pyName}({pyParent}, "{self.name}");')
 
-            args = str()
+            name = self.name.replace('::', '')
+            content.append(f'pybind11::class_<{self.cppName}> {self.pyName}({pyParent}, "{name}");')
+
+            arguments = str()
             for entry in self._functions:
                 funcName = entry['name']
                 if not entry['constructor']:
                     continue
-                break
+                arguments = entry['arguments']
 
-            content.append(f'{self.pyName}.def(pybind11::init<{args}>());')
+            content.append(f'{self.pyName}.def(pybind11::init<{arguments}>());')
             content.append('')
 
         for entry in self._subMeta:
