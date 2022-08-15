@@ -1,15 +1,21 @@
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include <Music/TimeCode.h>
 
-void init_TimeCode(pybind11::module_ &module)
+void init_TimeCode(pybind11::module_& module)
 {
-   pybind11::class_<TimeCode> timeCode(module, "TimeCode");
-   timeCode.def(pybind11::init<>());
-   timeCode.def(pybind11::init<TimeCode::Duration, uint8_t, uint8_t>());
-   timeCode.def("text", &TimeCode::text);
-   timeCode.def("toDuration", &TimeCode::toDuration);
-   timeCode.def_readonly("bar", &TimeCode::bar);
-   timeCode.def_readonly("quarter", &TimeCode::quarter);
-   timeCode.def_readonly("tick", &TimeCode::tick);
+   pybind11::class_<TimeCode> timecode(module, "TimeCode");
+   timecode.def(pybind11::init<uint16_t,uint8_t,uint8_t>());
+   
+
+   // autogen start
+   timecode.def_readwrite("bar", &TimeCode::bar);
+   timecode.def_readwrite("quarter", &TimeCode::quarter);
+   timecode.def_readwrite("tick", &TimeCode::tick);
+   
+   timecode.def("text", &TimeCode::text);
+   timecode.def("toDuration", &TimeCode::toDuration);
+   // autogen end
 }
+

@@ -1,4 +1,5 @@
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include <Blocks/PolyRamp.h>
 
@@ -6,9 +7,10 @@ void init_PolyRamp(pybind11::module_& module)
 {
    pybind11::class_<PolyRamp> polyramp(module, "PolyRamp");
    polyramp.def(pybind11::init<>());
+   
 
    // autogen start
-   pybind11::enum_<PolyRamp::LengthStatus> lengthstatus(polyramp, "LengthStatus");
+   pybind11::enum_<PolyRamp::LengthStatus> lengthstatus(module, "PolyRampLengthStatus");
    lengthstatus.value("Kept", PolyRamp::LengthStatus::Kept);
    lengthstatus.value("Changed", PolyRamp::LengthStatus::Changed);
    lengthstatus.value("Error", PolyRamp::LengthStatus::Error);

@@ -7,9 +7,10 @@ void init_Sample(pybind11::module_& module)
 {
    pybind11::class_<Sample> sample(module, "Sample");
    sample.def(pybind11::init<>());
-
+   
    pybind11::class_<Sample::Meta> sample_meta(sample, "Meta");
    sample_meta.def(pybind11::init<>());
+   
 
    // autogen start
    sample_meta.def_readwrite("noOfChannels", &Sample::Meta::noOfChannels);
@@ -22,3 +23,4 @@ void init_Sample(pybind11::module_& module)
    sample.def_static("deinterlace", &Sample::deinterlace);
    // autogen end
 }
+
