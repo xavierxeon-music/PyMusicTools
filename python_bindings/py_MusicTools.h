@@ -16,5 +16,7 @@ extern void init_SoundMesh(pybind11::module_& module);
 extern void init_Spectrum(pybind11::module_& module);
 extern void init_Tempo(pybind11::module_& module);
 extern void init_TimeCode(pybind11::module_& module);
+extern void init_TrackerLane(pybind11::module_& module);
+extern void init_TrackerProject(pybind11::module_& module);
 extern void init_Trapezoid(pybind11::module_& module);
 extern void init_WaveTable(pybind11::module_& module);

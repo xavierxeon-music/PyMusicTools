@@ -8,6 +8,9 @@ void init_Tempo(pybind11::module_& module)
    pybind11::class_<Tempo> tempo(module, "Tempo");
    tempo.def(pybind11::init<>());
    
+   pybind11::class_<TempoControl> tempocontrol(module, "TempoControl");
+   tempocontrol.def(pybind11::init<>());
+   
 
    // autogen start
    pybind11::enum_<Tempo::Division> division(module, "TempoDivision");
@@ -30,9 +33,9 @@ void init_Tempo(pybind11::module_& module)
    tempo.def("getBeatsPerMinute", &Tempo::getBeatsPerMinute);
    tempo.def("getCounter", &Tempo::getCounter);
    tempo.def("getPercentage", &Tempo::getPercentage);
-   tempo.def("advance", &Tempo::advance);
-   tempo.def("clockTick", &Tempo::clockTick);
-   tempo.def("clockReset", &Tempo::clockReset);
+   tempocontrol.def("advance", &TempoControl::advance);
+   tempocontrol.def("clockTick", &TempoControl::clockTick);
+   tempocontrol.def("clockReset", &TempoControl::clockReset);
    // autogen end
 }
 

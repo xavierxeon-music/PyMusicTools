@@ -25,6 +25,8 @@ PYBIND11_MODULE(musictools, module)
    init_Spectrum(module);
    init_Tempo(module);
    init_TimeCode(module);
+   init_TrackerLane(module);
+   init_TrackerProject(module);
    init_Trapezoid(module);
    init_WaveTable(module);
 }
