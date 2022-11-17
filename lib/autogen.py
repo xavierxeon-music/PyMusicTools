@@ -72,6 +72,7 @@ def _update(name, path):
     meta = Meta(content, None, None)
 
     bindingFileName = basePath + '/python_bindings/' + path + '/py_' + name + '.cpp'
+    os.makedirs(basePath + '/python_bindings/' + path, exist_ok=True)
     if not os.path.exists(bindingFileName):
         _createSkeleton(bindingFileName, name, path, meta.compileConstructor())
 

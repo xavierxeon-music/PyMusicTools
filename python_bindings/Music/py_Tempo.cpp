@@ -15,7 +15,6 @@ void init_Tempo(pybind11::module_& module)
    // autogen start
    pybind11::enum_<Tempo::Division> division(module, "TempoDivision");
    division.value("Sixteenth", Tempo::Division::Sixteenth);
-   division.value("Eigth", Tempo::Division::Eigth);
    division.value("Quarter", Tempo::Division::Quarter);
    division.value("Bar", Tempo::Division::Bar);
    division.export_values();
@@ -27,11 +26,10 @@ void init_Tempo(pybind11::module_& module)
    runstate.value("Running", Tempo::RunState::Running);
    runstate.export_values();
    
-   tempo.def_static("getName", &Tempo::getName);
+   tempo.def_static("compileName", &Tempo::compileName);
    tempo.def("getRunState", &Tempo::getRunState);
    tempo.def("isRunningOrFirstTick", &Tempo::isRunningOrFirstTick);
    tempo.def("getBeatsPerMinute", &Tempo::getBeatsPerMinute);
-   tempo.def("getCounter", &Tempo::getCounter);
    tempo.def("getPercentage", &Tempo::getPercentage);
    tempocontrol.def("advance", &TempoControl::advance);
    tempocontrol.def("clockTick", &TempoControl::clockTick);

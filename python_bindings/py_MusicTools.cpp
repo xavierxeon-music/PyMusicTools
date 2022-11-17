@@ -7,16 +7,14 @@
 
 PYBIND11_MODULE(musictools, module)
 {
-   init_AbstractEffect(module);
-   init_AbstractOscilator(module);
-   init_AbstractSoundSource(module);
+   init_AbstractSegmentCrawler(module);
+   init_Contour(module);
    init_Counter(module);
    init_FastRandom(module);
+   init_Grooves(module);
    init_MidiCommon(module);
    init_MidiFile(module);
    init_Note(module);
-   init_PolyRamp(module);
-   init_Revoice(module);
    init_Sample(module);
    init_SampleOscilator(module);
    init_Sequencer(module);
@@ -25,9 +23,5 @@ PYBIND11_MODULE(musictools, module)
    init_Spectrum(module);
    init_Tempo(module);
    init_TimeCode(module);
-   init_TrackerLane(module);
-   init_TrackerProject(module);
-   init_Trapezoid(module);
-   init_WaveTable(module);
 }
 

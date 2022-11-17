@@ -12,7 +12,7 @@ musicToolsDir = basePath + '/MusicTools'
 
 def _compileCppSourceList():
 
-    sources = ['AbstractEffect.cpp', 'AbstractOscilator.cpp', 'AbstractSoundSource.cpp', 'Maths.cpp', 'Note.cpp', 'Spectrum.cpp']
+    sources = ['AbstractEffect.cpp', 'AbstractOscilator.cpp', 'AbstractSoundSource.cpp', 'Maths.cpp', 'Note.cpp', 'Spectrum.cpp', 'Memory/MemoryManager.cpp']
     sources = [musicToolsDir + '/' + entry for entry in sources]
 
     def addSourceFiles(path):
@@ -32,7 +32,7 @@ def _compileCppSourceList():
 
 def createCmakeFile():
 
-    includeDirs = [musicToolsDir, musicToolsDir + '/Include', musicToolsDir + '/RememberDummy']
+    includeDirs = [musicToolsDir, musicToolsDir + '/Include', musicToolsDir + '/RememberDummy', musicToolsDir + '/Memory']
 
     with open(basePath + '/CMakeLists.txt', 'w') as cmakefile:
         cmakefile.write('cmake_minimum_required(VERSION 3.18)\n')
